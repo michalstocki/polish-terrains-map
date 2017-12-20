@@ -8,25 +8,63 @@
 // Note that we set the prototype to an instance, rather than the
 // parent class itself, because we do not wish to modify the parent class.
 
-var overlay;
+const IMG_SIZE = {
+  width: 2048,
+  height: 1150,
+};
+
+const WILNO_IMAGE_PIXEL_COORDS = {
+  x: 1001,
+  y: 188,
+};
+
+const WILNO_FRACTAL_COORDS = {
+  x: WILNO_IMAGE_PIXEL_COORDS.x / IMG_SIZE.width,
+  y: WILNO_IMAGE_PIXEL_COORDS.y / IMG_SIZE.height,
+};
+
+const KRAKOW_IMAGE_PIXEL_COORDS = {
+  x: 584,
+  y: 824,
+};
+
+const KRAKOW_FRACTAL_COORDS = {
+  x: KRAKOW_IMAGE_PIXEL_COORDS.x / IMG_SIZE.width,
+  y: KRAKOW_IMAGE_PIXEL_COORDS.y / IMG_SIZE.height,
+};
+
+const WILNO_KRAKOW_IMAGE_DISTANCE = {
+  horizontal: WILNO_IMAGE_PIXEL_COORDS.x - KRAKOW_IMAGE_PIXEL_COORDS.x,
+  vertical: KRAKOW_IMAGE_PIXEL_COORDS.y - WILNO_IMAGE_PIXEL_COORDS.y,
+};
+
+const WILNO_LAT_LONG = {
+  lat: 54.687300,
+  long: 25.278854,
+};
+
+const KRAKOW_LAT_LONG = {
+  lat: 50.061791,
+  long: 19.937452
+};
+
+let overlay;
 USGSOverlay.prototype = new google.maps.OverlayView();
 
 // Initialize the map and the custom overlay.
 
 function initMap() {
-  var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 11,
-    center: {lat: 62.323907, lng: -150.109291},
-    mapTypeId: 'satellite'
+  const map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 6,
+    center: { lat: 52.249322, lng: 19.203971 },
   });
 
-  var bounds = new google.maps.LatLngBounds(
-    new google.maps.LatLng(62.281819, -150.287132),
-    new google.maps.LatLng(62.400471, -150.005608));
+  const bounds = new google.maps.LatLngBounds(
+    new google.maps.LatLng(KRAKOW_LAT_LONG.lat, KRAKOW_LAT_LONG.long),
+    new google.maps.LatLng(WILNO_LAT_LONG.lat, WILNO_LAT_LONG.long)
+  );
 
-  // The photograph is courtesy of the U.S. Geological Survey.
-  var srcImage = 'https://developers.google.com/maps/documentation/' +
-    'javascript/examples/full/images/talkeetna.png';
+  const srcImage = 'http://localhost:8888/images/polish-terrains-map.jpg';
 
   // The custom USGSOverlay object contains the USGS image,
   // the bounds of the image, and a reference to the map.
@@ -56,23 +94,24 @@ function USGSOverlay(bounds, image, map) {
  */
 USGSOverlay.prototype.onAdd = function() {
 
-  var div = document.createElement('div');
+  const div = document.createElement('div');
   div.style.borderStyle = 'none';
   div.style.borderWidth = '0px';
   div.style.position = 'absolute';
 
   // Create the img element and attach it to the div.
-  var img = document.createElement('img');
+  const img = document.createElement('img');
   img.src = this.image_;
   img.style.width = '100%';
   img.style.height = '100%';
   img.style.position = 'absolute';
+  img.style.opacity = '0.5';
   div.appendChild(img);
 
   this.div_ = div;
 
   // Add the element to the "overlayLayer" pane.
-  var panes = this.getPanes();
+  const panes = this.getPanes();
   panes.overlayLayer.appendChild(div);
 };
 
@@ -81,20 +120,30 @@ USGSOverlay.prototype.draw = function() {
   // We use the south-west and north-east
   // coordinates of the overlay to peg it to the correct position and size.
   // To do this, we need to retrieve the projection from the overlay.
-  var overlayProjection = this.getProjection();
+  const overlayProjection = this.getProjection();
 
   // Retrieve the south-west and north-east coordinates of this overlay
   // in LatLngs and convert them to pixel coordinates.
   // We'll use these coordinates to resize the div.
-  var sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
-  var ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+  const sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
+  const ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
 
   // Resize the image's div to fit the indicated dimensions.
-  var div = this.div_;
-  div.style.left = sw.x + 'px';
-  div.style.top = ne.y + 'px';
-  div.style.width = (ne.x - sw.x) + 'px';
-  div.style.height = (sw.y - ne.y) + 'px';
+
+  const wilnoKrakowVerticalMapDistance = sw.y - ne.y;
+  const wilnoKrakowHorizontalMapDistance = ne.x - sw.x;
+
+  const imageWidthOnMap = (wilnoKrakowHorizontalMapDistance * IMG_SIZE.width) / WILNO_KRAKOW_IMAGE_DISTANCE.horizontal;
+  const imageHeightOnMap = (wilnoKrakowVerticalMapDistance * IMG_SIZE.height) / WILNO_KRAKOW_IMAGE_DISTANCE.vertical;
+  const imageXOnMap = sw.x - (KRAKOW_FRACTAL_COORDS.x * imageWidthOnMap);
+  const imageYOnMap = ne.y - (WILNO_FRACTAL_COORDS.y * imageHeightOnMap);
+
+
+  const div = this.div_;
+  div.style.left = imageXOnMap + 'px';
+  div.style.top = imageYOnMap + 'px';
+  div.style.width = imageWidthOnMap + 'px';
+  div.style.height = imageHeightOnMap + 'px';
 };
 
 // The onRemove() method will be called automatically from the API if
