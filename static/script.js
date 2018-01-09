@@ -38,6 +38,11 @@ const WILNO_KRAKOW_IMAGE_DISTANCE = {
   vertical: KRAKOW_IMAGE_PIXEL_COORDS.y - WILNO_IMAGE_PIXEL_COORDS.y,
 };
 
+const WILNO_KRAKOW_LINEAR_IMAGE_DISTANCE = getLinearDistance(
+  WILNO_KRAKOW_IMAGE_DISTANCE.horizontal,
+  WILNO_KRAKOW_IMAGE_DISTANCE.vertical
+);
+
 const WILNO_LAT_LONG = {
   lat: 54.687300,
   long: 25.278854,
@@ -47,6 +52,10 @@ const KRAKOW_LAT_LONG = {
   lat: 50.061791,
   long: 19.937452
 };
+
+function getLinearDistance(a, b) {
+  return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+}
 
 let overlay;
 USGSOverlay.prototype = new google.maps.OverlayView();
@@ -132,10 +141,12 @@ USGSOverlay.prototype.draw = function() {
 
   const wilnoKrakowVerticalMapDistance = sw.y - ne.y;
   const wilnoKrakowHorizontalMapDistance = ne.x - sw.x;
+  const wilnoKrakowLinearMapDistance = getLinearDistance(wilnoKrakowVerticalMapDistance, wilnoKrakowHorizontalMapDistance);
+  const scale = wilnoKrakowLinearMapDistance / WILNO_KRAKOW_LINEAR_IMAGE_DISTANCE;
 
-  const imageWidthOnMap = (wilnoKrakowHorizontalMapDistance * IMG_SIZE.width) / WILNO_KRAKOW_IMAGE_DISTANCE.horizontal;
-  const imageHeightOnMap = (wilnoKrakowVerticalMapDistance * IMG_SIZE.height) / WILNO_KRAKOW_IMAGE_DISTANCE.vertical;
-  const imageXOnMap = sw.x - (KRAKOW_FRACTAL_COORDS.x * imageWidthOnMap);
+  const imageWidthOnMap = IMG_SIZE.width * scale;
+  const imageHeightOnMap = IMG_SIZE.height * scale;
+  const imageXOnMap = ne.x - (WILNO_FRACTAL_COORDS.x * imageWidthOnMap);
   const imageYOnMap = ne.y - (WILNO_FRACTAL_COORDS.y * imageHeightOnMap);
 
 
