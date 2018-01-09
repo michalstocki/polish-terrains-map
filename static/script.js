@@ -1,4 +1,3 @@
-
 const IMG_SIZE = {
   width: 2048,
   height: 1150,
@@ -46,6 +45,11 @@ const KRAKOW_LAT_LONG = {
 
 function getLinearDistance(a, b) {
   return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+}
+
+function getAngle(center, p2, p3) {
+  const rad = Math.atan2(p2.y - center.y, p2.x - center.x) - Math.atan2(p3.y - center.y, p3.x - center.x);
+  return rad * (180 / Math.PI);
 }
 
 let overlay;
@@ -102,7 +106,7 @@ USGSOverlay.prototype.onAdd = function() {
 
   const debugPoint = document.createElement('div');
   debugPoint.className = 'pt-debug';
-  imageContainer.appendChild(debugPoint);
+  topContainer.appendChild(debugPoint);
 
   // Create the img element and attach it to the div.
   const img = document.createElement('img');
@@ -131,7 +135,6 @@ USGSOverlay.prototype.draw = function() {
   const ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
 
   // Resize the image's div to fit the indicated dimensions.
-
   const wilnoKrakowVerticalMapDistance = sw.y - ne.y;
   const wilnoKrakowHorizontalMapDistance = ne.x - sw.x;
   const wilnoKrakowLinearMapDistance = getLinearDistance(wilnoKrakowVerticalMapDistance, wilnoKrakowHorizontalMapDistance);
@@ -145,6 +148,13 @@ USGSOverlay.prototype.draw = function() {
   };
   const imageXOnMap = ne.x - wilnoCoordsOnScaledImage.x;
   const imageYOnMap = ne.y - wilnoCoordsOnScaledImage.y;
+  const krakowImageCoordsOnMapBeforeRotation = {
+    x: imageXOnMap + KRAKOW_FRACTAL_COORDS.x * imageWidthOnMap,
+    y: imageYOnMap + KRAKOW_FRACTAL_COORDS.y * imageHeightOnMap,
+  };
+
+  // Calculate image's div rotation
+  const angle = getAngle(ne, sw, krakowImageCoordsOnMapBeforeRotation);
 
   const imageContainer = this.div_.querySelector('.pt-image-container');
   imageContainer.style.left = imageXOnMap + 'px';
@@ -152,7 +162,7 @@ USGSOverlay.prototype.draw = function() {
   imageContainer.style.width = imageWidthOnMap + 'px';
   imageContainer.style.height = imageHeightOnMap + 'px';
   imageContainer.style.transformOrigin = wilnoCoordsOnScaledImage.x + 'px ' + wilnoCoordsOnScaledImage.y + 'px';
-  imageContainer.style.transform = 'rotate(1.7deg)';
+  imageContainer.style.transform = 'rotate(' + angle + 'deg)';
 };
 
 // The onRemove() method will be called automatically from the API if
