@@ -1,12 +1,3 @@
-// This example creates a custom overlay called USGSOverlay, containing
-// a U.S. Geological Survey (USGS) image of the relevant area on the map.
-
-// Set the custom overlay object's prototype to a new instance
-// of OverlayView. In effect, this will subclass the overlay class therefore
-// it's simpler to load the API synchronously, using
-// google.maps.event.addDomListener().
-// Note that we set the prototype to an instance, rather than the
-// parent class itself, because we do not wish to modify the parent class.
 
 const IMG_SIZE = {
   width: 2048,
