@@ -94,10 +94,14 @@ function USGSOverlay(bounds, image, map) {
  */
 USGSOverlay.prototype.onAdd = function() {
 
-  const div = document.createElement('div');
-  div.style.borderStyle = 'none';
-  div.style.borderWidth = '0px';
-  div.style.position = 'absolute';
+  const topContainer = document.createElement('div');
+  topContainer.className = 'polish-terrains';
+  const imageContainer = document.createElement('div');
+  imageContainer.style.borderStyle = 'none';
+  imageContainer.style.borderWidth = '0px';
+  imageContainer.style.position = 'absolute';
+  imageContainer.className = 'pt-image-container';
+  topContainer.appendChild(imageContainer);
 
   // Create the img element and attach it to the div.
   const img = document.createElement('img');
@@ -106,13 +110,13 @@ USGSOverlay.prototype.onAdd = function() {
   img.style.height = '100%';
   img.style.position = 'absolute';
   img.style.opacity = '0.5';
-  div.appendChild(img);
+  imageContainer.appendChild(img);
 
-  this.div_ = div;
+  this.div_ = topContainer;
 
   // Add the element to the "overlayLayer" pane.
   const panes = this.getPanes();
-  panes.overlayLayer.appendChild(div);
+  panes.overlayLayer.appendChild(topContainer);
 };
 
 USGSOverlay.prototype.draw = function() {
@@ -141,11 +145,12 @@ USGSOverlay.prototype.draw = function() {
   const imageYOnMap = ne.y - (WILNO_FRACTAL_COORDS.y * imageHeightOnMap);
 
 
-  const div = this.div_;
-  div.style.left = imageXOnMap + 'px';
-  div.style.top = imageYOnMap + 'px';
-  div.style.width = imageWidthOnMap + 'px';
-  div.style.height = imageHeightOnMap + 'px';
+  const imageContainer = this.div_.querySelector('.pt-image-container');
+  imageContainer.style.left = imageXOnMap + 'px';
+  imageContainer.style.top = imageYOnMap + 'px';
+  imageContainer.style.width = imageWidthOnMap + 'px';
+  imageContainer.style.height = imageHeightOnMap + 'px';
+  imageContainer.style.transformOrigin = ne.x + 'px ' + ne.y + 'px';
 };
 
 // The onRemove() method will be called automatically from the API if
