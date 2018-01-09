@@ -22,8 +22,9 @@ html, body {
 	width: 10px;
 	height: 10px;
 	border-radius: 50%;
-	animation: fade 300ms infinite;
+	animation: fade 600ms infinite;
 	transform: translateX(-50%) translateY(-50%);
+	transform-origin: center center;
 	display: none;
 }
 
@@ -38,11 +39,17 @@ html, body {
 @keyframes fade {
 	from {
 		opacity: 1.0;
+		width: 30px;
+		height: 30px;
 	}
 	50% {
-		opacity: 0.5;
+		opacity: 0.2;
+		width: 5px;
+		height: 5px;
 	}
 	to {
 		opacity: 1.0;
+		width: 30px;
+		height: 30px;
 	}
 }
