@@ -68,7 +68,7 @@ function initMap() {
     new google.maps.LatLng(WILNO_LAT_LONG.lat, WILNO_LAT_LONG.long)
   );
 
-  const srcImage = 'http://localhost:8888/images/polish-terrains-map.jpg';
+  const srcImage = 'images/polish-terrains-map.jpg';
 
   // The custom USGSOverlay object contains the USGS image,
   // the bounds of the image, and a reference to the map.
