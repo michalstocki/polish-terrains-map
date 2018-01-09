@@ -97,19 +97,17 @@ USGSOverlay.prototype.onAdd = function() {
   const topContainer = document.createElement('div');
   topContainer.className = 'polish-terrains';
   const imageContainer = document.createElement('div');
-  imageContainer.style.borderStyle = 'none';
-  imageContainer.style.borderWidth = '0px';
-  imageContainer.style.position = 'absolute';
   imageContainer.className = 'pt-image-container';
   topContainer.appendChild(imageContainer);
 
+  const debugPoint = document.createElement('div');
+  debugPoint.className = 'pt-debug';
+  imageContainer.appendChild(debugPoint);
+
   // Create the img element and attach it to the div.
   const img = document.createElement('img');
+  img.className = 'pt-image';
   img.src = this.image_;
-  img.style.width = '100%';
-  img.style.height = '100%';
-  img.style.position = 'absolute';
-  img.style.opacity = '0.5';
   imageContainer.appendChild(img);
 
   this.div_ = topContainer;
@@ -141,16 +139,20 @@ USGSOverlay.prototype.draw = function() {
 
   const imageWidthOnMap = IMG_SIZE.width * scale;
   const imageHeightOnMap = IMG_SIZE.height * scale;
-  const imageXOnMap = ne.x - (WILNO_FRACTAL_COORDS.x * imageWidthOnMap);
-  const imageYOnMap = ne.y - (WILNO_FRACTAL_COORDS.y * imageHeightOnMap);
-
+  const wilnoCoordsOnScaledImage = {
+    x: WILNO_FRACTAL_COORDS.x * imageWidthOnMap,
+    y: WILNO_FRACTAL_COORDS.y * imageHeightOnMap
+  };
+  const imageXOnMap = ne.x - wilnoCoordsOnScaledImage.x;
+  const imageYOnMap = ne.y - wilnoCoordsOnScaledImage.y;
 
   const imageContainer = this.div_.querySelector('.pt-image-container');
   imageContainer.style.left = imageXOnMap + 'px';
   imageContainer.style.top = imageYOnMap + 'px';
   imageContainer.style.width = imageWidthOnMap + 'px';
   imageContainer.style.height = imageHeightOnMap + 'px';
-  imageContainer.style.transformOrigin = ne.x + 'px ' + ne.y + 'px';
+  imageContainer.style.transformOrigin = wilnoCoordsOnScaledImage.x + 'px ' + wilnoCoordsOnScaledImage.y + 'px';
+  imageContainer.style.transform = 'rotate(1.7deg)';
 };
 
 // The onRemove() method will be called automatically from the API if
