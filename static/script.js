@@ -58,21 +58,25 @@ USGSOverlay.prototype = new google.maps.OverlayView();
 // Initialize the map and the custom overlay.
 
 function initMap() {
-  const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 6,
-    center: { lat: 52.249322, lng: 19.203971 },
+  fetch('map-style.json').then((response) => response.json()).then((styles) => {
+    const map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 6,
+      center: { lat: 52.249322, lng: 19.203971 },
+      styles: styles,
+      rotateControl: true,
+    });
+
+    const bounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(KRAKOW_LAT_LONG.lat, KRAKOW_LAT_LONG.long),
+      new google.maps.LatLng(WILNO_LAT_LONG.lat, WILNO_LAT_LONG.long)
+    );
+
+    const srcImage = 'images/polish-terrains-map.jpg';
+
+    // The custom USGSOverlay object contains the USGS image,
+    // the bounds of the image, and a reference to the map.
+    overlay = new USGSOverlay(bounds, srcImage, map);
   });
-
-  const bounds = new google.maps.LatLngBounds(
-    new google.maps.LatLng(KRAKOW_LAT_LONG.lat, KRAKOW_LAT_LONG.long),
-    new google.maps.LatLng(WILNO_LAT_LONG.lat, WILNO_LAT_LONG.long)
-  );
-
-  const srcImage = 'images/polish-terrains-map.jpg';
-
-  // The custom USGSOverlay object contains the USGS image,
-  // the bounds of the image, and a reference to the map.
-  overlay = new USGSOverlay(bounds, srcImage, map);
 }
 
 /** @constructor */
