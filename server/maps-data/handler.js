@@ -7,15 +7,16 @@ module.exports.mapdata = (event, context, callback) => {
   const mapUrl = `https://www.google.com/maps/d/kml?forcekml=1&mid=${mapId}`;
 
   https.get(mapUrl, (res) => {
-    const { statusCode } = res;
 
     res.setEncoding('utf-8');
     const rawData = [];
     res.on('data', (chunk) => { rawData.push(chunk); });
     res.on('end', () => {
+      const collectedData = rawData.join('');
+      const fixedKML = collectedData.replace(/\n<\/km$/, '\n</kml>\n');
       const response = {
-        statusCode,
-        body: rawData.join(''),
+        statusCode: 200,
+        body: fixedKML ,
         headers: {
           'content-type': 'text/plain; charset=utf-8'
         }
