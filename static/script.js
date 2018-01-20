@@ -78,9 +78,7 @@ function initMap() {
     overlay = new USGSOverlay(bounds, srcImage, map);
 
     new google.maps.KmlLayer({
-      // url: 'https://gist.githubusercontent.com/michalstocki/eb5245f1a6af32e28eedbc1fab046c59/raw/47f1d855c277c8fecfc684248b313bb6ce49f82d/my-map.kml',
       url: 'https://fncxe4c02h.execute-api.us-east-1.amazonaws.com/dev/mapdata?mid=1woi0QbZDrnmUO-l9dnGiCvY9d6Xs2BNW',
-      // url: 'http://www.google.com/maps/d/u/0/kml?forcekml=1&mid=1woi0QbZDrnmUO-l9dnGiCvY9d6Xs2BNW',
       map: map
     });
   });
