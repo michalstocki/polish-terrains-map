@@ -1,16 +1,34 @@
 'use strict';
 
+const https = require('https');
+
 module.exports.mapdata = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+  const mapId = event.queryStringParameters.mid;
+  const mapUrl = `https://www.google.com/maps/d/kml?forcekml=1&mid=${mapId}`;
 
-  callback(null, response);
+  https.get(mapUrl, (res) => {
+    const { statusCode } = res;
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+    res.setEncoding('utf8');
+    let rawData = '';
+    res.on('data', (chunk) => { rawData += chunk; });
+    res.on('end', () => {
+      const response = {
+        statusCode,
+        body: rawData + 'l>\n',
+        headers: {
+          'content-type': 'text/plain; charset=utf-8'
+        }
+      };
+
+      callback(null, response);
+    });
+  }).on('error', (e) => {
+    const response = {
+      statusCode: 500,
+      body: `Got error: ${e.message}`,
+    };
+
+    callback(null, response);
+  });
 };
