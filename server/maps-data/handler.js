@@ -9,13 +9,13 @@ module.exports.mapdata = (event, context, callback) => {
   https.get(mapUrl, (res) => {
     const { statusCode } = res;
 
-    res.setEncoding('utf8');
-    let rawData = '';
-    res.on('data', (chunk) => { rawData += chunk; });
+    res.setEncoding('utf-8');
+    const rawData = [];
+    res.on('data', (chunk) => { rawData.push(chunk); });
     res.on('end', () => {
       const response = {
         statusCode,
-        body: rawData + 'l>\n',
+        body: rawData.join(''),
         headers: {
           'content-type': 'text/plain; charset=utf-8'
         }
