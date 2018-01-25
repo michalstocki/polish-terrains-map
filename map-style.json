@@ -3,16 +3,7 @@
     "featureType": "landscape",
     "stylers": [
       {
-        "visibility": "on"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.man_made",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "visibility": "off"
+        "color": "#ffffff"
       }
     ]
   },

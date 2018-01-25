@@ -4,7 +4,8 @@
   "description": "Google map enriched with a layer presenting terrains historically belonging to Poland",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node server/development/index.js",
+    "deploy-lambda": "cd server/maps-data && serverless deploy function -f mapdata"
   },
   "author": "Michał Stocki",
   "license": "MIT",
