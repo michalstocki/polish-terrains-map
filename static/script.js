@@ -52,6 +52,15 @@ function getAngle(center, p2, p3) {
   return rad * (180 / Math.PI);
 }
 
+function getMapLayerIdFromUrl() {
+  const regex = /#\/layer\/([^\/]*)$/g;
+  const match = regex.exec(document.location.hash);
+  if (match) {
+    return match[1];
+  }
+  return null;
+}
+
 let overlay;
 USGSOverlay.prototype = new google.maps.OverlayView();
 
@@ -77,10 +86,14 @@ function initMap() {
     // the bounds of the image, and a reference to the map.
     overlay = new USGSOverlay(bounds, srcImage, map);
 
-    new google.maps.KmlLayer({
-      url: 'https://fncxe4c02h.execute-api.us-east-1.amazonaws.com/dev/mapdata?mid=1woi0QbZDrnmUO-l9dnGiCvY9d6Xs2BNW',
-      map: map
-    });
+    // Load custom google map as a layer over map and image, when custom map id is given as URL param
+    const customMapId = getMapLayerIdFromUrl();
+    if (customMapId) {
+      new google.maps.KmlLayer({
+        url: 'https://fncxe4c02h.execute-api.us-east-1.amazonaws.com/dev/mapdata?mid=' + customMapId,
+        map: map
+      });
+    }
   });
 }
 
